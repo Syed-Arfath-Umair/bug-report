@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sider Fullscreen Reproduction Test</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background: #080b12;
+    color: #f5f7fb;
+}
+
+body {
+    min-height: 100vh;
+}
+
+.app {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at 20% 10%,
+            rgba(80, 100, 255, 0.13),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 80% 80%,
+            rgba(0, 200, 255, 0.08),
+            transparent 30%
+        ),
+        #080b12;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.topbar {
+    padding: 32px 6vw;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.08);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+}
+
+.eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+
+    color: #7c8cff;
+
+    margin-bottom: 8px;
+}
+
+h1 {
+    margin: 0;
+
+    font-size:
+        clamp(28px, 4vw, 46px);
+
+    letter-spacing: -1.5px;
+}
+
+.subtitle {
+    margin: 10px 0 0;
+
+    color: #8f98aa;
+
+    max-width: 700px;
+
+    line-height: 1.6;
+}
+
+.status-card {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 12px 18px;
+
+    border:
+        1px solid rgba(255,255,255,.1);
+
+    border-radius: 999px;
+
+    background:
+        rgba(255,255,255,.04);
+
+    white-space: nowrap;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #737b8c;
+}
+
+.status-dot.active {
+    background: #35e58b;
+
+    box-shadow:
+        0 0 12px rgba(53,229,139,.7);
+}
+
+
+/* =========================
+   MAIN
+========================= */
+
+main {
+    width: min(1200px, 88%);
+
+    margin: 0 auto;
+
+    padding: 60px 0 100px;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    min-height: 570px;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 70px;
+
+    align-items: center;
+}
+
+.badge {
+    display: inline-block;
+
+    padding: 7px 12px;
+
+    border-radius: 8px;
+
+    background:
+        rgba(124,140,255,.12);
+
+    border:
+        1px solid rgba(124,140,255,.25);
+
+    color: #9ba7ff;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.hero h2 {
+    font-size:
+        clamp(34px, 5vw, 58px);
+
+    line-height: 1.02;
+
+    letter-spacing: -2px;
+
+    margin: 20px 0;
+}
+
+.hero-content > p {
+    color: #9ca5b5;
+
+    line-height: 1.8;
+
+    max-width: 650px;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.fullscreen-controls {
+    display: flex;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+    margin-top: 25px;
+}
+
+button {
+    padding: 15px 22px;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    color: #080b12;
+
+    font-size: 15px;
+
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s,
+        opacity .2s,
+        background .2s;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+button:disabled {
+    cursor: not-allowed;
+
+    opacity: .45;
+}
+
+.exit-btn {
+    background: #252b37;
+
+    color: #f5f7fb;
+
+    border:
+        1px solid rgba(255,255,255,.12);
+}
+
+.exit-btn:hover:not(:disabled) {
+    background: #303847;
+}
+
+
+/* =========================
+   INSTRUCTIONS
+========================= */
+
+.instructions {
+    margin-top: 35px;
+
+    display: grid;
+
+    gap: 13px;
+}
+
+.instruction {
+    display: flex;
+
+    gap: 14px;
+
+    align-items: flex-start;
+}
+
+.instruction > span {
+    width: 27px;
+    height: 27px;
+
+    flex: 0 0 27px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.08);
+
+    color: #cbd2df;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.instruction strong {
+    font-size: 14px;
+}
+
+.instruction p {
+    margin: 3px 0 0;
+
+    color: #777f90;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   VISUAL
+========================= */
+
+.visual {
+    display: flex;
+
+    justify-content: center;
+}
+
+.browser-window {
+    width: min(480px, 100%);
+
+    overflow: hidden;
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    border-radius: 18px;
+
+    background: #10151f;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.45);
+}
+
+.browser-bar {
+    height: 44px;
+
+    padding: 0 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    background: #171d28;
+}
+
+.browser-bar span {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #525b6d;
+}
+
+.browser-content {
+    padding: 45px 40px;
+}
+
+.fake-line {
+    height: 12px;
+
+    width: 90%;
+
+    border-radius: 8px;
+
+    background: #272f3d;
+
+    margin: 13px 0;
+}
+
+.fake-line.large {
+    width: 70%;
+
+    height: 22px;
+}
+
+.fake-line.short {
+    width: 45%;
+}
+
+.fake-card {
+    margin: 35px 0;
+
+    padding: 22px;
+
+    border-radius: 14px;
+
+    border:
+        1px solid rgba(255,255,255,.07);
+
+    background: #151b26;
+
+    display: flex;
+
+    gap: 16px;
+
+    align-items: center;
+}
+
+.fake-circle {
+    width: 50px;
+    height: 50px;
+
+    flex: 0 0 50px;
+
+    border-radius: 50%;
+
+    background: #252e3d;
+}
+
+
+/* =========================
+   DIAGNOSTICS
+========================= */
+
+.diagnostics {
+    padding: 30px;
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,.025);
+}
+
+.diagnostics h3,
+.log-section h3 {
+    margin-top: 0;
+}
+
+.diagnostic-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 14px;
+}
+
+.diagnostic {
+    padding: 18px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(0,0,0,.2);
+}
+
+.diagnostic span {
+    display: block;
+
+    color: #737c8d;
+
+    font-size: 12px;
+
+    margin-bottom: 8px;
+}
+
+.diagnostic strong {
+    font-size: 14px;
+}
+
+
+/* =========================
+   EVENT LOG
+========================= */
+
+.log-section {
+    margin-top: 30px;
+}
+
+.event-log {
+    padding: 20px;
+
+    min-height: 120px;
+
+    border-radius: 14px;
+
+    background: #05070b;
+
+    border:
+        1px solid rgba(255,255,255,.06);
+
+    color: #8992a4;
+
+    font-family: Consolas, monospace;
+
+    font-size: 12px;
+
+    line-height: 1.8;
+}
+
+
+/* =========================
+   FLOATING TEST UI
+========================= */
+
+/*
+    This element intentionally exists
+    in the normal document.
+
+    It represents an example of floating
+    extension-style UI.
+*/
+
+.external-ui-demo {
+    position: fixed;
+
+    right: 22px;
+    bottom: 22px;
+
+    width: 230px;
+
+    border:
+        1px solid rgba(255,255,255,.15);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    background:
+        rgba(20,25,35,.96);
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.5);
+
+    z-index: 2147483647;
+
+    backdrop-filter: blur(14px);
+}
+
+.external-header {
+    padding: 12px 14px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.08);
+}
+
+.pulse {
+    display: inline-block;
+
+    width: 7px;
+    height: 7px;
+
+    margin-right: 6px;
+
+    border-radius: 50%;
+
+    background: #55e6a0;
+}
+
+.external-body {
+    padding: 14px;
+
+    color: #929bac;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 850px) {
+
+    .hero {
+        grid-template-columns: 1fr;
+    }
+
+    .diagnostic-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .topbar {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .diagnostic-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .external-ui-demo {
+        width: 190px;
+
+        right: 12px;
+        bottom: 12px;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="topbar">
+
+        <div>
+
+            <div class="eyebrow">
+                FULLSCREEN REPRODUCTION TEST
+            </div>
+
+            <h1>
+                Sider Fullscreen Test
+            </h1>
+
+            <p class="subtitle">
+                Minimal test page for reproducing floating-assistant
+                behavior during browser fullscreen.
+            </p>
+
+        </div>
+
+
+        <div class="status-card">
+
+            <span
+                class="status-dot"
+                id="statusDot">
+            </span>
+
+            <span id="statusText">
+                Windowed
+            </span>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main>
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <span class="badge">
+                    Reproduction Environment
+                </span>
+
+
+                <h2>
+                    Test the assistant while this page is fullscreen
+                </h2>
+
+
+                <p>
+
+                    Open your browser assistant normally, then enter
+                    fullscreen using the button below.
+
+                    Once fullscreen is active, check whether the
+                    assistant's floating interface remains visible
+                    and usable.
+
+                </p>
+
+
+                <!-- FULLSCREEN CONTROLS -->
+
+                <div class="fullscreen-controls">
+
+                    <button
+                        id="fullscreenBtn">
+
+                        ⛶ Enter Fullscreen
+
+                    </button>
+
+
+                    <button
+                        id="exitFullscreenBtn"
+                        class="exit-btn"
+                        disabled>
+
+                        ✕ Exit Fullscreen
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- INSTRUCTIONS -->
+
+                <div class="instructions">
+
+                    <div class="instruction">
+
+                        <span>1</span>
+
+                        <div>
+
+                            <strong>
+                                Open the assistant
+                            </strong>
+
+                            <p>
+                                Open Sider normally before entering
+                                fullscreen.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="instruction">
+
+                        <span>2</span>
+
+                        <div>
+
+                            <strong>
+                                Enter fullscreen
+                            </strong>
+
+                            <p>
+                                Click the Enter Fullscreen button.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="instruction">
+
+                        <span>3</span>
+
+                        <div>
+
+                            <strong>
+                                Check the assistant
+                            </strong>
+
+                            <p>
+                                Check whether its floating interface
+                                remains visible.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="instruction">
+
+                        <span>4</span>
+
+                        <div>
+
+                            <strong>
+                                Exit fullscreen
+                            </strong>
+
+                            <p>
+                                Click Exit Fullscreen or press Esc.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- VISUAL -->
+
+            <div class="visual">
+
+                <div class="browser-window">
+
+                    <div class="browser-bar">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+
+                    <div class="browser-content">
+
+                        <div class="fake-line large"></div>
+
+                        <div class="fake-line"></div>
+
+                        <div class="fake-line short"></div>
+
+
+                        <div class="fake-card">
+
+                            <div class="fake-circle"></div>
+
+                            <div>
+
+                                <div class="fake-line"></div>
+
+                                <div class="fake-line short"></div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="fake-line"></div>
+
+                        <div class="fake-line short"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             DIAGNOSTICS
+        ========================== -->
+
+        <section class="diagnostics">
+
+            <h3>
+                Fullscreen diagnostics
+            </h3>
+
+
+            <div class="diagnostic-grid">
+
+                <div class="diagnostic">
+
+                    <span>
+                        Fullscreen API
+                    </span>
+
+                    <strong id="fullscreenState">
+                        Inactive
+                    </strong>
+
+                </div>
+
+
+                <div class="diagnostic">
+
+                    <span>
+                        Fullscreen element
+                    </span>
+
+                    <strong id="fullscreenElement">
+                        None
+                    </strong>
+
+                </div>
+
+
+                <div class="diagnostic">
+
+                    <span>
+                        Viewport
+                    </span>
+
+                    <strong id="viewport">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="diagnostic">
+
+                    <span>
+                        Browser
+                    </span>
+
+                    <strong id="browser">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             EVENT LOG
+        ========================== -->
+
+        <section class="log-section">
+
+            <h3>
+                Event log
+            </h3>
+
+
+            <div
+                id="eventLog"
+                class="event-log">
+
+                <div>
+                    Waiting for fullscreen test…
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================
+         FLOATING TEST ELEMENT
+    ========================== -->
+
+    <div
+        id="external-ui-demo"
+        class="external-ui-demo">
+
+        <div class="external-header">
+
+            <span class="pulse"></span>
+
+            External floating UI
+
+        </div>
+
+
+        <div class="external-body">
+
+            This element represents floating UI
+            that exists outside the application's
+            fullscreen content.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* =========================
+   ELEMENT REFERENCES
+========================= */
+
+const fullscreenBtn =
+    document.getElementById(
+        "fullscreenBtn"
+    );
+
+const exitFullscreenBtn =
+    document.getElementById(
+        "exitFullscreenBtn"
+    );
+
+const statusText =
+    document.getElementById(
+        "statusText"
+    );
+
+const statusDot =
+    document.getElementById(
+        "statusDot"
+    );
+
+const fullscreenState =
+    document.getElementById(
+        "fullscreenState"
+    );
+
+const fullscreenElement =
+    document.getElementById(
+        "fullscreenElement"
+    );
+
+const viewport =
+    document.getElementById(
+        "viewport"
+    );
+
+const browser =
+    document.getElementById(
+        "browser"
+    );
+
+const eventLog =
+    document.getElementById(
+        "eventLog"
+    );
+
+
+/* =========================
+   EVENT LOGGER
+========================= */
+
+function addLog(message) {
+
+    const time =
+        new Date().toLocaleTimeString();
+
+    const entry =
+        document.createElement("div");
+
+    entry.textContent =
+        `[${time}] ${message}`;
+
+    eventLog.prepend(entry);
+}
+
+
+/* =========================
+   UPDATE DIAGNOSTICS
+========================= */
+
+function updateDiagnostics() {
+
+    const active =
+        !!document.fullscreenElement;
+
+
+    if (active) {
+
+        statusText.textContent =
+            "Fullscreen active";
+
+        statusDot.classList.add(
+            "active"
+        );
+
+
+        fullscreenState.textContent =
+            "ACTIVE";
+
+
+        fullscreenElement.textContent =
+            document.fullscreenElement.tagName +
+            (
+                document.fullscreenElement.id
+                    ? `#${document.fullscreenElement.id}`
+                    : ""
+            );
+
+
+        fullscreenBtn.disabled =
+            true;
+
+        fullscreenBtn.textContent =
+            "✓ Fullscreen Active";
+
+
+        exitFullscreenBtn.disabled =
+            false;
+
+    }
+
+    else {
+
+        statusText.textContent =
+            "Windowed";
+
+        statusDot.classList.remove(
+            "active"
+        );
+
+
+        fullscreenState.textContent =
+            "Inactive";
+
+        fullscreenElement.textContent =
+            "None";
+
+
+        fullscreenBtn.disabled =
+            false;
+
+        fullscreenBtn.textContent =
+            "⛶ Enter Fullscreen";
+
+
+        exitFullscreenBtn.disabled =
+            true;
+    }
+
+
+    viewport.textContent =
+        `${window.innerWidth} × ${window.innerHeight}`;
+}
+
+
+/* =========================
+   BROWSER DETECTION
+========================= */
+
+function detectBrowser() {
+
+    const ua =
+        navigator.userAgent;
+
+
+    if (ua.includes("Edg/"))
+        return "Microsoft Edge";
+
+
+    if (ua.includes("Chrome/"))
+        return "Google Chrome";
+
+
+    if (ua.includes("Firefox/"))
+        return "Firefox";
+
+
+    if (ua.includes("Safari/"))
+        return "Safari";
+
+
+    return "Unknown";
+}
+
+
+browser.textContent =
+    detectBrowser();
+
+
+/* =========================
+   ENTER FULLSCREEN
+========================= */
+
+fullscreenBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (document.fullscreenElement) {
+            return;
+        }
+
+
+        try {
+
+            await document.documentElement
+                .requestFullscreen();
+
+
+            addLog(
+                "requestFullscreen() completed successfully."
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            addLog(
+                "Fullscreen request failed: " +
+                error.message
+            );
+        }
+
+
+        updateDiagnostics();
+    }
+);
+
+
+/* =========================
+   EXIT FULLSCREEN
+========================= */
+
+exitFullscreenBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (!document.fullscreenElement) {
+            return;
+        }
+
+
+        try {
+
+            await document.exitFullscreen();
+
+
+            addLog(
+                "exitFullscreen() completed successfully."
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            addLog(
+                "Exit fullscreen failed: " +
+                error.message
+            );
+        }
+
+
+        updateDiagnostics();
+    }
+);
+
+
+/* =========================
+   FULLSCREEN CHANGE EVENT
+========================= */
+
+document.addEventListener(
+    "fullscreenchange",
+    () => {
+
+        updateDiagnostics();
+
+
+        if (document.fullscreenElement) {
+
+            addLog(
+                "fullscreenchange → fullscreenElement is now " +
+                document.fullscreenElement.tagName
+            );
+
+        }
+
+        else {
+
+            addLog(
+                "fullscreenchange → returned to normal window."
+            );
+        }
+    }
+);
+
+
+/* =========================
+   RESIZE
+========================= */
+
+window.addEventListener(
+    "resize",
+    updateDiagnostics
+);
+
+
+/* =========================
+   INITIAL STATE
+========================= */
+
+updateDiagnostics();
+
+addLog(
+    "Page loaded. Open the assistant before starting the test."
+);
+
+</script>
+
+</body>
+</html>
